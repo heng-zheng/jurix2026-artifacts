@@ -1,0 +1,15 @@
+{
+  "case_sources": [
+    {
+      "source_url": "REPLACE_WITH_OYEZ_CASE_SOURCE_URL"
+    }
+  ],
+  "oral_arguments": [
+    {
+      "source_url": "REPLACE_WITH_OYEZ_ORAL_ARGUMENT_SOURCE_URL",
+      "case_source_ids": [
+        "REPLACE_WITH_CASE_SOURCE_ID_RETURNED_BY_OYEZ"
+      ]
+    }
+  ]
+}

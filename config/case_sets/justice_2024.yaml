@@ -1,0 +1,65 @@
+openrouter:
+  base_url: "https://openrouter.ai/api/v1"
+  api_key_env: "OPENROUTER_API_KEY"
+  max_retries: 2
+  timeout_seconds: 120
+
+progress:
+  enabled: true
+  every_n_calls: 10
+
+annotation_workflow:
+  profiles:
+    frontier:
+      annotator_models: [gpt_5_2, gemini_2_5_pro]
+      adjudicator_model: claude_opus_4_5
+    balanced:
+      annotator_models: [gpt_5_6_luna, gemini_3_5_flash]
+      adjudicator_model: claude_sonnet_5
+    economy:
+      annotator_models: [gpt_5_4_mini, gemini_3_flash_preview]
+      adjudicator_model: claude_sonnet_5
+
+annotation_run:
+  local_context:
+    enabled: true
+    type: same_advocate_group_local_window_with_opening
+    before_tokens: 450
+    after_tokens: 450
+    long_flag_threshold: 1500
+
+models:
+  annotation:
+    gpt_5_2:
+      provider: openrouter
+      model_name: "openai/gpt-5.2"
+      fixed_provider: "openai"
+    gemini_2_5_pro:
+      provider: openrouter
+      model_name: "google/gemini-2.5-pro"
+      fixed_provider: "google-ai-studio"
+    gpt_5_6_luna:
+      provider: openrouter
+      model_name: "openai/gpt-5.6-luna"
+      fixed_provider: "openai"
+    gemini_3_5_flash:
+      provider: openrouter
+      model_name: "google/gemini-3.5-flash"
+      fixed_provider: "google-ai-studio"
+    gpt_5_4_mini:
+      provider: openrouter
+      model_name: "openai/gpt-5.4-mini"
+      fixed_provider: "openai"
+    gemini_3_flash_preview:
+      provider: openrouter
+      model_name: "google/gemini-3-flash-preview"
+      fixed_provider: "google-ai-studio"
+  adjudication:
+    claude_opus_4_5:
+      provider: openrouter
+      model_name: "anthropic/claude-opus-4.5"
+      fixed_provider: "anthropic"
+    claude_sonnet_5:
+      provider: openrouter
+      model_name: "anthropic/claude-sonnet-5"
+      fixed_provider: "anthropic"

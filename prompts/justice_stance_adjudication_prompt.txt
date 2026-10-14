@@ -1,0 +1,63 @@
+You are independently adjudicating stance toward one complete selected hierarchical reason bundle.
+
+Current Justice utterance:
+{{utterance}}
+
+Dialogue context (interpretive aid only):
+{{dialogue_context}}
+
+Complete reason bundle:
+{{target}}
+
+The `reason_tree` contains only the Stage 2 human-final selected bundle; `children` are included descendants within that bundle, and `selected_terminal=true` marks a selected terminal reason.
+
+Annotators' latest effective outputs:
+{{annotations}}
+
+Latest validation findings for ordinary still-invalid annotator output:
+{{validation_findings}}
+
+Definitions:
+- Favor: A justice's utterance can be labeled as Favor if it can reasonably be inferred that the Justice conveys support for or agreement with the target legal proposition, either explicitly or implicitly.
+- Against: A justice's utterance can be labeled as Against if it can reasonably be inferred that the Justice conveys opposition to or disagreement with the target legal proposition, either explicitly or implicitly.
+- Neutral: A justice's utterance can be labeled as Neutral if it cannot reasonably be inferred that the Justice conveys either support for or opposition to the target legal proposition, either explicitly or implicitly.
+
+The target legal proposition may correspond to one selected reason node, multiple selected reason nodes, or the complete selected reason bundle. The only annotation target is the complete bundle. Reason IDs inside directional evidence are evidence locators, not separate stance labels.
+
+Make one independent complete-bundle judgment; do not vote or return a patch.
+
+Aggregation rules:
+- Support toward at least one part and no opposition anywhere in the bundle: Favor.
+- Opposition toward at least one part and no support anywhere in the bundle: Against.
+- Neither support nor opposition toward any part: Neutral.
+- Support toward one part and opposition toward another part: Mixed.
+- Favor plus Neutral is Favor; Against plus Neutral is Against; only Favor plus Against is Mixed.
+
+Contract:
+- stance_outcome must be exactly Favor, Against, Neutral, or Mixed.
+- Favor requires favor_evidence and against_evidence=null.
+- Against requires against_evidence and favor_evidence=null.
+- Neutral requires both evidence blocks to be null.
+- Mixed requires both evidence blocks.
+- Each non-null block contains exactly one non-empty verbatim utterance_evidence_span and a non-empty unique target_reason_ids list.
+- IDs may identify any reason node contained in the complete hierarchy, including terminal nodes and ancestors.
+- If one direction concerns the complete bundle, use all terminal_selected_reason_ids. Do not invent a bundle sentinel or return bundle_id as a reason ID.
+- Do not return reason text, per-node stance labels, Neutral node mappings, routing fields, or undefined fields.
+- Include rationale, confidence, and uncertainty_notes as bundle-level auxiliary fields.
+- Stance evidence must come from the current Justice utterance.
+- Dialogue context may aid interpretation but may not supply evidence.
+- Do not treat advocate answers as the current Justice's stance.
+- Return one complete JSON object only, without a code fence or surrounding text.
+
+Return this exact structure:
+{
+  "stance_outcome": "Favor | Against | Neutral | Mixed",
+  "favor_evidence": {
+    "utterance_evidence_span": "one representative verbatim span",
+    "target_reason_ids": ["reason_target_id"]
+  },
+  "against_evidence": null,
+  "rationale": "short bundle-level rationale",
+  "confidence": 0.0,
+  "uncertainty_notes": "string or empty"
+}

@@ -1,0 +1,13 @@
+{
+  "briefs": [
+    {
+      "brief_id": "REPLACE_WITH_APPROVED_BRIEF_ID",
+      "docket_numbers": [
+        "REPLACE_WITH_DOCKET_NUMBER"
+      ],
+      "brief_group": "pet",
+      "pdf_path": "REPLACE_WITH_LOCAL_BRIEF_PDF_PATH",
+      "reason_tree_path": "REPLACE_WITH_LOCAL_REASON_TREE_JSONL_PATH"
+    }
+  ]
+}

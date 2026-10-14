@@ -1,0 +1,50 @@
+You are annotating one current Justice oral-argument utterance for a legal NLP workflow.
+
+Current Justice utterance:
+{{utterance}}
+
+Dialogue context (interpretive aid only):
+{{dialogue_context}}
+
+Decide whether the current utterance itself has substantive analytical meaning and expresses one or more oral-argument question purposes. Pure fillers, apologies, acknowledgments, and incomplete fragments without substantive analytical signal have no question function.
+
+Valid purpose labels:
+
+Background: Questions seeking factual or procedural information that is missing or not clear in the briefing.
+
+Clarification: questions seeking to get an advocate to 1) clarify their position or the scope of the rule being advocated for; or 2) clarify the contours of the rule, its legal basis and origins, as identified through precedents, text of statutes, or legislative history
+
+Implications: questions about 1) the outer limits of a rule or its implications for future cases; or 2) questions about what consequences will occur if the Court rules in a certain way.
+
+Support: Questions offering support for the advocate's position.
+
+Criticism: Questions criticizing an advocate's position.
+
+Communicate: Questions designed primarily to communicate with other justices.
+
+Humor: Questions designed to interject humor into the argument and relieve tension.
+
+Contract:
+- The annotation unit is the current Justice utterance only.
+- Dialogue context may clarify references, ellipses, and follow-up chains, but may not supply evidence.
+- Do not use outside facts or another speaker's words as evidence.
+- question_function_present must be a JSON boolean.
+- If false, purposes must be an empty list.
+- If true, purposes must contain one to seven unique purpose objects.
+- Purposes are unordered and have no primary/secondary ranking.
+- Each purpose object must contain exactly label and evidence_span.
+- Each evidence_span must be one non-empty verbatim span from the current Justice utterance.
+- rationale, confidence, and uncertainty_notes must be included as utterance-level auxiliary fields. Prefer a rationale of 35 words or fewer.
+- Do not return slots, overflow fields, alternative labels, routing fields, or any undefined field.
+- Return one complete JSON object only, without a code fence or surrounding text.
+
+Return this exact structure:
+{
+  "question_function_present": true,
+  "purposes": [
+    {"label": "Background | Clarification | Implications | Support | Criticism | Communicate | Humor", "evidence_span": "verbatim span"}
+  ],
+  "rationale": "utterance-level rationale, preferably 35 words or fewer",
+  "confidence": 0.0,
+  "uncertainty_notes": "string or empty"
+}

@@ -1,0 +1,22 @@
+{
+  "selected_oyez_argument_ids": [
+    "REPLACE_WITH_OYEZ_ARGUMENT_ID"
+  ],
+  "oral_argument_brief_scopes": [
+    {
+      "oyez_argument_id": "REPLACE_WITH_OYEZ_ARGUMENT_ID",
+      "brief_ids": [
+        "REPLACE_WITH_APPROVED_BRIEF_ID"
+      ]
+    }
+  ],
+  "phase_times_by_argument": {},
+  "annotation_scope": {
+    "target_justices": [
+      "REPLACE_WITH_JUSTICE_NAME"
+    ],
+    "advocate_group_limits": {
+      "pet": "all"
+    }
+  }
+}

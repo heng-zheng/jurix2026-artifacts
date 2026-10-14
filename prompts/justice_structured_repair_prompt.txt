@@ -1,0 +1,18 @@
+Repair the previous model response so that it satisfies the original task's complete output contract.
+
+Original task and context:
+{{original_task}}
+
+Previous response:
+{{last_output}}
+
+Deterministic validation findings:
+{{validation_findings}}
+
+Substantive fields that are already valid and must remain exactly unchanged:
+{{protected_fields}}
+
+Fields that may be repaired:
+{{repairable_fields}}
+
+Return one complete JSON object satisfying the original contract. Do not explain the repair, use a code fence, add undefined fields, or change any protected substantive field.

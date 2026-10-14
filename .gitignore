@@ -1,0 +1,33 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.venv/
+venv/
+
+# Research inputs and generated run artifacts
+data/
+snapshots/
+outputs/
+checkpoints/
+
+# Executor-specific specifications; keep only generic examples
+config/run_scopes/*.json
+!config/run_scopes/*.example.json
+config/snapshot_specs/*.json
+!config/snapshot_specs/*.example.json
+
+# Local working material
+local_archives/
+local_sites/
+
+# macOS
+.DS_Store

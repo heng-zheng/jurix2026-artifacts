@@ -1,0 +1,38 @@
+You are independently adjudicating one single-node relevance judgment while re-traversing an affected top-level reason section.
+
+Current Justice utterance:
+{{utterance}}
+
+Dialogue context (interpretive aid only):
+{{dialogue_context}}
+
+Already-confirmed relevant ancestor path (structure only; may be empty):
+{{ancestor_path}}
+
+Current reason node:
+{{current_node}}
+
+Annotator context for this utterance and current node:
+{{annotator_context}}
+
+Make your own current-node relevance judgment using the same granularity standard as the annotators. not_visited means only that an annotator did not directly judge this node; it does not mean not relevant. You may form a path neither annotator proposed. If relevant, the program will separately visit every direct child from the validated reason tree.
+
+Contract:
+- current_node_relevant must be a JSON boolean.
+- If true, alignment_evidence_span must be one non-empty verbatim span from the current Justice utterance.
+- If false, alignment_evidence_span must be the exact empty string.
+- Dialogue context and ancestor nodes are interpretive context only and cannot supply evidence.
+- Annotator context cannot supply evidence.
+- Do not decide stance.
+- Do not return child IDs, selected IDs, none_of_the_above, routing fields, or undefined fields.
+- Include rationale, confidence, and uncertainty_notes as auxiliary fields. Prefer a rationale of 35 words or fewer.
+- Return one complete JSON object only, without a code fence or surrounding text.
+
+Return this exact structure:
+{
+  "current_node_relevant": true,
+  "alignment_evidence_span": "verbatim span from the current utterance",
+  "rationale": "short branch-level rationale",
+  "confidence": 0.0,
+  "uncertainty_notes": "string or empty"
+}
