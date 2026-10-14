@@ -191,6 +191,7 @@ class OpenRouterClient:
             raise RecoverableOpenRouterError("OpenRouter API retries were already exhausted in this episode.")
         last_error = None
         for attempt in range(attempts_used, attempt_limit):
+            response_saved_for_metadata = False
             attempt_path = (
                 raw_response_path.with_name(
                     (
@@ -347,6 +348,7 @@ class OpenRouterClient:
                         json.dumps(response_state, ensure_ascii=False, indent=2),
                         encoding="utf-8",
                     )
+                    response_saved_for_metadata = True
                     try:
                         metadata, metadata_attempts = self.generation_metadata(
                             generation_id,
@@ -419,6 +421,8 @@ class OpenRouterClient:
                     )
                 raise
             except Exception as exc:
+                if isinstance(exc, RecoverableOpenRouterError) and response_saved_for_metadata:
+                    raise
                 last_error = exc
                 if attempt_path is not None and not attempt_path.exists():
                     attempt_path.write_text(

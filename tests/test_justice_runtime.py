@@ -892,33 +892,62 @@ class OpenRouterContractTests(unittest.TestCase):
         self.assertEqual(result["actual_provider"], "Provider")
 
     def test_exhausted_metadata_resume_does_not_recall_model(self):
-        chat_payload = {
-            "id": "gen-metadata-retry", "model": "actual-model",
-            "choices": [{"finish_reason": "stop", "message": {"content": "{}"}}],
-        }
+        chat_payloads = [
+            {
+                "id": generation_id, "model": "actual-model",
+                "choices": [{"finish_reason": "stop", "message": {"content": "{}"}}],
+            }
+            for generation_id in ("gen-a", "gen-b", "gen-c")
+        ]
         metadata_payload = {"data": {"provider_name": "Provider", "model": "actual-model"}}
         with TemporaryDirectory() as tmp, patch.dict(
             os.environ, {"TEST_OPENROUTER_KEY": "key"}
         ), patch(
-            "pipeline.openrouter_client.requests.post", return_value=FakeResponse(chat_payload)
+            "pipeline.openrouter_client.requests.post",
+            side_effect=[FakeResponse(payload) for payload in chat_payloads],
         ) as post, patch(
             "pipeline.openrouter_client.requests.get",
             side_effect=[
-                RuntimeError("temporary"), RuntimeError("temporary"),
-                RuntimeError("temporary"), RuntimeError("temporary"),
+                FakeResponse({"error": "not found"}, status=404),
+                FakeResponse({"error": "not found"}, status=404),
+                FakeResponse({"error": "not found"}, status=404),
+                FakeResponse({"error": "not found"}, status=404),
                 FakeResponse(metadata_payload),
             ],
-        ), patch("pipeline.openrouter_client.time.sleep"):
-            client = self.client()
+        ) as get, patch("pipeline.openrouter_client.time.sleep"):
+            client = self.client(max_retries=2)
             raw = Path(tmp) / "raw.json"
             kwargs = {"require_generation_metadata": True}
             with self.assertRaises(RecoverableOpenRouterError):
                 client.chat("requested-model", "prompt", raw, Path(tmp) / "errors.log", **kwargs)
+            pending_path = Path(tmp) / "raw.pending_metadata.json"
+            http_state_path = Path(tmp) / "raw.http_request_state.json"
+            metadata_state_path = Path(tmp) / "raw.metadata_query_state.json"
+            pending = json.loads(pending_path.read_text())
+            metadata_state = json.loads(metadata_state_path.read_text())
+            self.assertEqual(post.call_count, 1)
+            self.assertEqual(get.call_count, 4)
+            self.assertEqual(pending["status"], "metadata_pending")
+            self.assertEqual(pending["result"]["generation_id"], "gen-a")
+            self.assertEqual(json.loads(http_state_path.read_text())["status"], "response_received")
+            self.assertEqual(metadata_state["status"], "query_failed")
+            self.assertEqual(metadata_state["episode_number"], 1)
+            self.assertEqual(metadata_state["params"], {"id": "gen-a"})
             result = client.chat(
                 "requested-model", "prompt", raw, Path(tmp) / "errors.log", **kwargs
             )
             self.assertEqual(post.call_count, 1)
+            self.assertEqual(get.call_count, 5)
+            self.assertEqual(result["generation_id"], "gen-a")
             self.assertEqual(result["actual_provider"], "Provider")
+            self.assertEqual(result["actual_model"], "actual-model")
+            pending = json.loads(pending_path.read_text())
+            metadata_state = json.loads(metadata_state_path.read_text())
+            self.assertEqual(pending["status"], "complete")
+            self.assertEqual(pending["result"]["generation_id"], "gen-a")
+            self.assertEqual(metadata_state["status"], "complete")
+            self.assertEqual(metadata_state["episode_number"], 2)
+            self.assertEqual(metadata_state["params"], {"id": "gen-a"})
             self.assertTrue(
                 (Path(tmp) / "raw.metadata_query_state.episode_002.attempt_01.json").is_file()
             )
